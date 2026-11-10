@@ -1,0 +1,34 @@
+[
+  {
+    "id": "bifactor-1992",
+    "title": "Full-Information Item Bi-Factor Analysis",
+    "authors": "Robert D. Gibbons; Donald R. Hedeker",
+    "year": 1992,
+    "doi": "10.1007/bf02295430",
+    "url": "https://doi.org/10.1007/bf02295430",
+    "abstract": "A plausible s-factor solution for many types of psychological and educational tests is one that exhibits a general factor and s \u2212 1 group or method related factors. The bi-factor solution results from the constraint that each item has a nonzero loading on the primary dimension and at most one of the s \u2212 1 group factors. This paper derives a bi-factor item-response model for binary response data. In marginal maximum likelihood estimation of item parameters, the bi-factor restriction leads to a major simplification of likelihood equations and (a) permits analysis of models with large numbers of group factors; (b) permits conditional dependence within identified subsets of items; and (c) provides more parsimonious factor solutions than an unrestricted full-information item factor analysis in some cases.",
+    "text": "",
+    "access": "abstract-only",
+    "provenance": "Crossref DOI metadata and publisher abstract; full paper not retrieved",
+    "verifiedAt": "2026-11-10T02:39:22.883558+00:00",
+    "oaUrl": null,
+    "license": null,
+    "pages": null
+  },
+  {
+    "id": "dina-2009",
+    "title": "DINA Model and Parameter Estimation: A Didactic",
+    "authors": "Jimmy de la Torre",
+    "year": 2009,
+    "doi": "10.3102/1076998607309474",
+    "url": "https://doi.org/10.3102/1076998607309474",
+    "abstract": "Cognitive and skills diagnosis models are psychometric models that have immense potential to provide rich information relevant for instruction and learning. However, wider applications of these models have been hampered by their novelty and the lack of commercially available software that can be used to analyze data from this psychometric framework. To address this issue, this article focuses on one tractable and interpretable skills diagnosis model\u2014the DINA model\u2014and presents it didactically. The article also discusses expectation-maximization and Markov chain Monte Carlo algorithms in estimating its model parameters. Finally, analyses of simulated and real data are presented.",
+    "text": "",
+    "access": "abstract-only",
+    "provenance": "Crossref DOI metadata and publisher abstract; full paper not retrieved",
+    "verifiedAt": "2026-11-10T02:39:22.883738+00:00",
+    "oaUrl": null,
+    "license": null,
+    "pages": null
+  }
+]

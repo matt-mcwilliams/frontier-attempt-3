@@ -8,3 +8,12 @@
 # Operating system metadata
 .DS_Store
 Thumbs.db
+
+# Dependencies, builds, tests, and private local learning data
+node_modules/
+dist/
+data/
+.certs/
+test-results/
+playwright-report/
+*.tsbuildinfo

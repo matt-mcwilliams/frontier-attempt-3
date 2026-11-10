@@ -1,0 +1,61 @@
+{
+  "name": "margin-research-tutor",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "tsx watch server/index.ts",
+    "build": "tsc --noEmit && vite build",
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "check": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "test:e2e": "playwright test",
+    "sources:verify": "tsx scripts/verify-sources.ts",
+    "format": "prettier --write src server shared scripts tests docs *.ts *.json *.html *.md",
+    "format:check": "prettier --check src server shared scripts tests docs *.ts *.json *.html *.md"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.1.5",
+    "@fastify/middie": "^9.3.6",
+    "@fastify/multipart": "^10.1.8",
+    "@fastify/static": "^10.1.10",
+    "@fastify/websocket": "^11.3.7",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "dotenv": "^18.0.10",
+    "fastify": "^5.12.8",
+    "jose": "^6.2.17",
+    "katex": "^0.19.1",
+    "lucide-react": "^1.70.0",
+    "pdfjs-dist": "^6.5.438",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-markdown": "^10.1.0",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/node": "^26.6.6",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/ws": "^8.18.2",
+    "@vitejs/plugin-react": "^6.3.0",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.7"
+  },
+  "overrides": {
+    "katex": "$katex"
+  }
+}

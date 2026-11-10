@@ -2,15 +2,20 @@
 
 ## Project context
 
-- `frontier-attempt-3` is a public, MIT-licensed project in its initial setup phase.
-- No application code, runtime, package manager, build system, or test suite has been selected yet.
-- Sign in with ChatGPT is a future option only. Do not implement authentication or add authentication dependencies unless requested.
-- See the README for the official OpenAI documentation to revisit when that feature is requested. Public repository visibility alone does not configure or enable sign-in.
+- Margin (`frontier-attempt-3`) is a public, MIT-licensed, personal local-first research tutor.
+- React/Vite/TypeScript, Tailwind/custom CSS, Fastify, native Node SQLite, WebRTC/WebSocket notebook camera, PDF.js, JOSE, KaTeX. Requires Node >=24 and npm.
+- The user explicitly requested Sign in with ChatGPT for tutoring. Use the official open-source dynamic-registration flow and ChatGPT-plan-authorized Responses requests; do not introduce API keys or private ChatGPT endpoints.
+- Preserve source provenance, abstract/full-text distinctions, evidence-backed learning records, and prerequisite return points. Never represent sample replies or simulated connections as working features.
+- Keep credentials and learning artifacts in ignored local data. Do not log tokens, authorization URLs, learner content, or pairing secrets. Never use personal learning data in tests.
+- README.md and docs/VERIFICATION.md document setup, architecture, verified behavior, and required physical-device checks.
 
 ## Checks
 
 - Run `git diff --check` for changes and `git diff --cached --check` before committing.
-- There are currently no build or test commands. Add verified commands here when the application stack is introduced.
+- Verified commands: `npm run check`, `npm test`, `npm run build`, `npm run test:e2e`, `npm run sources:verify`, `npm run format:check`.
+- Browser tests require OpenSSL and Chromium (default `/usr/bin/chromium`, override with `CHROMIUM_PATH`). They start isolated HTTPS on port 3219 with temporary data and synthetic video. Never reuse the personal data directory.
+- Source verification uses live Crossref/OpenAlex; unit/browser tests make no live tutoring calls.
+- Default development URL: http://localhost:3210 (`npm run dev`). Production: `npm run build && npm start`. Phone use requires trusted HTTPS; never bypass certificate validation in app code.
 - Review documentation for accuracy and avoid describing planned features as available.
 
 ## Commit and push rules
