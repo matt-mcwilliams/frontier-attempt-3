@@ -16,6 +16,9 @@ Tests exercise actual application code. Test model replies are injected only in 
 - Production UI over isolated HTTPS: rendering, real API calls, PDF upload/extraction, source persistence, themes, history, and drafts.
 - Real WebRTC negotiation between two browser contexts with a synthetic camera. Video reaches the desktop; selection freezes, rotation works, source-resolution crops attach, and attachments alone make no tutor request.
 - Phone layout and recovery from missing pairing credentials.
+- Compact desktop and mobile layouts: start action and message input remain visible at 320, 390, 1024, and 1360 pixels; source details, import options, study activity, and advanced settings remain reachable.
+
+Interface guidance and model-specific design criticisms considered for the simplification are recorded in [UX.md](UX.md).
 
 Live Crossref/OpenAlex verification has been run for both seeded papers. This verifies metadata, not full-text access.
 

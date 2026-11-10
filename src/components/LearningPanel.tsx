@@ -27,10 +27,7 @@ export function LearningPanel({
       aria-label="Learning record"
     >
       <header className="workspace-head">
-        <div>
-          <span className="eyebrow">CONTINUITY, NOT A SCORE</span>
-          <h2>Your learning record</h2>
-        </div>
+        <h2>Learning record</h2>
         <button
           className="icon-button"
           onClick={onClose}
@@ -40,29 +37,28 @@ export function LearningPanel({
         </button>
       </header>
       <div className="workspace-scroll">
-        <p className="panel-intro">
-          Understanding leaves evidence. These are the tutor’s observations of
-          your work, open to revision—not mastery estimates.
-        </p>
-        <div className="metric-strip">
-          <div>
-            <strong>{Math.round(metrics.activeSeconds / 60)}</strong>
-            <span>active minutes</span>
+        <section className="record-section history">
+          <div className="row spread">
+            <span className="eyebrow">LESSONS</span>
+            <button className="text-button" onClick={onNew}>
+              <Plus size={14} />
+              New lesson
+            </button>
           </div>
-          <div>
-            <strong>{metrics.hintRequests}</strong>
-            <span>hints requested</span>
-          </div>
-          <div>
-            <strong>{metrics.implementations}</strong>
-            <span>implementations</span>
-          </div>
-        </div>
-        <p className="fineprint">
-          Across lessons · {metrics.independentDemonstrations} independent
-          demonstrations · {metrics.delayedRecalls} recall observations. These
-          counts do not establish mastery.
-        </p>
+          {sessions.map((x) => (
+            <button
+              key={x.id}
+              aria-current={x.id === session.id ? "true" : undefined}
+              className={`history-item ${x.id === session.id ? "selected" : ""}`}
+              onClick={() => onSelect(x.id)}
+            >
+              <strong>{x.title}</strong>
+              <span>
+                {x.state.stage} · {new Date(x.updatedAt).toLocaleDateString()}
+              </span>
+            </button>
+          ))}
+        </section>
         {s.detours.map((d, i) => (
           <section className="detour-card" key={i}>
             <span className="eyebrow">PREREQUISITE DETOUR</span>
@@ -75,12 +71,12 @@ export function LearningPanel({
           </section>
         ))}
         <section className="record-section">
-          <span className="eyebrow">DEMONSTRATED & STILL DEVELOPING</span>
+          <span className="eyebrow">LEARNING EVIDENCE</span>
+          {s.evidence.length > 0 && (
+            <p className="fineprint">Tutor observations, not mastery scores.</p>
+          )}
           {!s.evidence.length ? (
-            <p>
-              No evidence yet. Your explanations, derivations, and
-              implementations will appear here as you work.
-            </p>
+            <p>No evidence yet. Your work will appear here as you learn.</p>
           ) : (
             concepts.map((concept) => (
               <div className="concept-record" key={concept}>
@@ -127,13 +123,13 @@ export function LearningPanel({
         </section>
         {s.conceptsIntroduced.length > 0 && (
           <section className="record-section">
-            <span className="eyebrow">INTRODUCED, NOT YET PROVEN</span>
+            <span className="eyebrow">INTRODUCED</span>
             <p>{s.conceptsIntroduced.join(" · ")}</p>
           </section>
         )}
         {s.exercises.length > 0 && (
           <section className="record-section">
-            <span className="eyebrow">PROBLEMS & IMPLEMENTATIONS</span>
+            <span className="eyebrow">EXERCISES</span>
             {s.exercises.map((e) => (
               <div className="exercise-record" key={e.id}>
                 <span className="evidence-label">
@@ -152,27 +148,29 @@ export function LearningPanel({
             ))}
           </section>
         )}
-        <section className="record-section history">
-          <div className="row spread">
-            <span className="eyebrow">LEARNING HISTORY</span>
-            <button className="text-button" onClick={onNew}>
-              <Plus size={14} />
-              New lesson
-            </button>
+
+        <details className="activity-details">
+          <summary>Study activity</summary>
+          <div className="metric-strip">
+            <div>
+              <strong>{Math.round(metrics.activeSeconds / 60)}</strong>
+              <span>active minutes</span>
+            </div>
+            <div>
+              <strong>{metrics.hintRequests}</strong>
+              <span>hints requested</span>
+            </div>
+            <div>
+              <strong>{metrics.implementations}</strong>
+              <span>implementations</span>
+            </div>
           </div>
-          {sessions.map((x) => (
-            <button
-              key={x.id}
-              className={`history-item ${x.id === session.id ? "selected" : ""}`}
-              onClick={() => onSelect(x.id)}
-            >
-              <strong>{x.title}</strong>
-              <span>
-                {x.state.stage} · {new Date(x.updatedAt).toLocaleDateString()}
-              </span>
-            </button>
-          ))}
-        </section>
+          <p className="fineprint">
+            Across lessons · {metrics.independentDemonstrations} independent
+            demonstrations · {metrics.delayedRecalls} recall observations. These
+            counts do not establish mastery.
+          </p>
+        </details>
       </div>
     </aside>
   );

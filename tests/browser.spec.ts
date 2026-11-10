@@ -8,11 +8,14 @@ test("desktop shell, real local API, source upload, learning continuity and them
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(
-    page.getByRole("heading", { name: "One score. Many abilities." }),
+    page.getByRole("heading", {
+      name: "Full-information Item Bi-factor Analysis",
+    }),
   ).toBeVisible();
   await page.screenshot({
     path: "test-results/margin-desktop.png",
     fullPage: true,
+    animations: "disabled",
   });
   await page.getByRole("button", { name: "Sources", exact: true }).click();
   await expect(
@@ -21,7 +24,25 @@ test("desktop shell, real local API, source upload, learning continuity and them
   await expect(
     page.getByText("Abstract available · full text needed", { exact: true }),
   ).toBeVisible();
+  await expect(page.getByLabel("DOI or direct PDF URL")).toBeHidden();
+  await page.screenshot({
+    path: "test-results/margin-sources.png",
+    fullPage: true,
+    animations: "disabled",
+  });
+  await page.getByText("Source details", { exact: true }).click();
+  await expect(
+    page.getByText("Publisher abstract", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(/Verified \d/)).toBeVisible();
+  await page.getByText("Add a source", { exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Upload a PDF" }),
+  ).toBeDisabled();
   await page.getByLabel("I may store and use this source locally").check();
+  await expect(
+    page.getByRole("button", { name: "Upload a PDF" }),
+  ).toBeEnabled();
   await page
     .locator('input[type=file][accept="application/pdf,.pdf"]')
     .setInputFiles({
@@ -47,9 +68,15 @@ test("desktop shell, real local API, source upload, learning continuity and them
   await page.screenshot({
     path: "test-results/margin-camera-setup.png",
     fullPage: true,
+    animations: "disabled",
   });
   await page.getByRole("button", { name: "Close camera", exact: true }).click();
   await page.getByRole("button", { name: "Open settings" }).click();
+  await page.screenshot({
+    path: "test-results/margin-settings.png",
+    fullPage: true,
+    animations: "disabled",
+  });
   await page.getByRole("button", { name: "dark", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.getByRole("button", { name: "Close settings" }).click();
@@ -58,6 +85,7 @@ test("desktop shell, real local API, source upload, learning continuity and them
   await page.screenshot({
     path: "test-results/margin-dark.png",
     fullPage: true,
+    animations: "disabled",
   });
   await page
     .getByRole("button", { name: "Learning record", exact: true })
@@ -144,6 +172,7 @@ test("actual WebRTC peer negotiation carries synthetic camera video; selected so
     await page.screenshot({
       path: "test-results/margin-live-camera.png",
       fullPage: true,
+      animations: "disabled",
     });
     expect(modelRequests).toBe(0);
     await page.getByRole("button", { name: "Disconnect", exact: true }).click();
@@ -165,5 +194,62 @@ test("phone has a real camera permission path and an understandable unpaired sta
   await page.screenshot({
     path: "test-results/margin-phone.png",
     fullPage: true,
+    animations: "disabled",
   });
+});
+
+test("compact layout keeps the next action visible and secondary controls reachable", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 1024, height: 768 },
+    { width: 1360, height: 768 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    const start = page.getByRole("button", {
+      name: "Connect ChatGPT to start",
+    });
+    await expect(start).toBeInViewport({ ratio: 1 });
+    await expect(
+      page.getByRole("textbox", { name: "Message the tutor" }),
+    ).toBeInViewport({ ratio: 1 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await start.click();
+    await expect(page.getByRole("dialog", { name: "Settings" })).toBeVisible();
+    await expect(page.getByLabel("Instructional strategy")).toBeHidden();
+    await page.getByText("Advanced settings", { exact: true }).click();
+    await expect(page.getByLabel("Instructional strategy")).toBeVisible();
+    await page.getByRole("button", { name: "Close settings" }).click();
+    await page.getByRole("button", { name: "Sources", exact: true }).click();
+    await expect(
+      page.getByRole("complementary", { name: "Research library" }),
+    ).toBeInViewport({ ratio: 1 });
+    await page.getByRole("button", { name: "Close sources" }).click();
+    await page
+      .getByRole("button", { name: "Learning record", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "New lesson" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("active minutes", { exact: true }),
+    ).toBeHidden();
+    await page.getByText("Study activity", { exact: true }).click();
+    await expect(
+      page.getByText("active minutes", { exact: true }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Close learning record" }).click();
+    await page.screenshot({
+      path: `test-results/margin-layout-${viewport.width}.png`,
+      fullPage: true,
+      animations: "disabled",
+    });
+  }
 });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   X,
   Plus,
@@ -26,6 +26,7 @@ export function SourcePanel({
   onClose: () => void;
   onBegin: (paper: Paper) => void;
 }) {
+  const upload = useRef<HTMLInputElement>(null);
   const [selected, setSelected] = useState(activeId ?? papers[0]?.id);
   const [value, setValue] = useState("");
   const [busy, setBusy] = useState(false);
@@ -55,9 +56,9 @@ export function SourcePanel({
       setSelected(p.id);
       setValue("");
       setNotice(
-        file
-          ? "Text extracted and stored locally. Check that the file matches the selected paper."
-          : "Bibliographic record imported. Full text is available only if a PDF was imported.",
+        p.access === "full-text"
+          ? "PDF imported. Check that it matches the selected paper."
+          : "Source record imported. Full text has not been imported.",
       );
     } catch (e) {
       setError((e as Error).message);
@@ -68,10 +69,7 @@ export function SourcePanel({
   return (
     <aside className="workspace source-workspace" aria-label="Research library">
       <header className="workspace-head">
-        <div>
-          <span className="eyebrow">READ WITH PURPOSE</span>
-          <h2>The source library</h2>
-        </div>
+        <h2>Sources</h2>
         <button
           className="icon-button"
           aria-label="Close sources"
@@ -81,15 +79,12 @@ export function SourcePanel({
         </button>
       </header>
       <div className="workspace-scroll">
-        <p className="panel-intro">
-          Each paper is an intellectual journey. Start with its problem; earn
-          your way to an independent explanation.
-        </p>
         <div className="paper-list">
           {papers.map((p) => (
             <button
               className={`paper-choice ${selected === p.id ? "selected" : ""}`}
               key={p.id}
+              aria-pressed={selected === p.id}
               onClick={() => {
                 setSelected(p.id);
                 setNotice("");
@@ -98,9 +93,7 @@ export function SourcePanel({
               <FileText size={18} />
               <span>
                 <strong>{p.title}</strong>
-                <small>
-                  {p.authors} · {p.year ?? "Year unverified"}
-                </small>
+                <small>{p.year ?? "Year unverified"}</small>
               </span>
               {selected === p.id && <Check size={16} />}
             </button>
@@ -117,44 +110,6 @@ export function SourcePanel({
                   ? "Abstract available · full text needed"
                   : "Metadata only"}
             </span>
-            <h3>{paper.title}</h3>
-            <p className="fineprint">
-              {paper.authors}
-              <br />
-              {paper.year} {paper.doi && <>· DOI {paper.doi}</>}
-            </p>
-            {paper.abstract && (
-              <details>
-                <summary>Read the publisher abstract</summary>
-                <p className="abstract">{paper.abstract}</p>
-              </details>
-            )}
-            <p className="source-provenance">
-              {paper.provenance}
-              <br />
-              Verified {new Date(paper.verifiedAt).toLocaleDateString()}
-            </p>
-            <div className="source-links">
-              {paper.url && (
-                <a href={paper.url} target="_blank" rel="noreferrer">
-                  Original source <ArrowUpRight size={13} />
-                </a>
-              )}
-              {paper.oaUrl && (
-                <a href={paper.oaUrl} target="_blank" rel="noreferrer">
-                  Open-access location <ArrowUpRight size={13} />
-                </a>
-              )}
-              {paper.access === "full-text" && (
-                <a
-                  href={`/api/papers/${paper.id}/pdf`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Open PDF <ArrowUpRight size={13} />
-                </a>
-              )}
-            </div>
             <div className="source-actions">
               <button
                 className="primary"
@@ -175,14 +130,53 @@ export function SourcePanel({
               </button>
               <button className="text-button" onClick={() => onBegin(paper)}>
                 <Plus size={14} />
-                New paper journey
+                New lesson
               </button>
             </div>
+            <details className="source-metadata">
+              <summary>Source details</summary>
+              <p className="fineprint">
+                {paper.authors}
+                <br />
+                {paper.year} {paper.doi && <>· DOI {paper.doi}</>}
+              </p>
+              {paper.abstract && (
+                <div>
+                  <h3 className="detail-label">Publisher abstract</h3>
+                  <p className="abstract">{paper.abstract}</p>
+                </div>
+              )}
+              <p className="source-provenance">
+                {paper.provenance}
+                <br />
+                Verified {new Date(paper.verifiedAt).toLocaleDateString()}
+              </p>
+              <div className="source-links">
+                {paper.url && (
+                  <a href={paper.url} target="_blank" rel="noreferrer">
+                    Original source <ArrowUpRight size={13} />
+                  </a>
+                )}
+                {paper.oaUrl && (
+                  <a href={paper.oaUrl} target="_blank" rel="noreferrer">
+                    Open-access location <ArrowUpRight size={13} />
+                  </a>
+                )}
+                {paper.access === "full-text" && (
+                  <a
+                    href={`/api/papers/${paper.id}/pdf`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open PDF <ArrowUpRight size={13} />
+                  </a>
+                )}
+              </div>
+            </details>
           </section>
         )}
-        <section className="import-section">
-          <span className="eyebrow">BRING YOUR OWN MATERIAL</span>
-          <h3>A paper worth understanding.</h3>
+        <details className="import-section">
+          <summary>Add a source</summary>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -206,10 +200,6 @@ export function SourcePanel({
                 <Plus size={18} />
               </button>
             </div>
-            <p className="fineprint">
-              DOIs use Crossref and OpenAlex. URL imports require a publicly
-              accessible PDF.
-            </p>
           </form>
           <label className="check-label">
             <input
@@ -228,35 +218,40 @@ export function SourcePanel({
               checked={linkExisting}
               onChange={(e) => setLinkExisting(e.target.checked)}
             />
-            <span>Associate the uploaded PDF with the selected paper.</span>
+            <span>Attach PDF to selected paper.</span>
           </label>
-          <label
-            className={`upload-button ${busy || !permission ? "disabled" : ""}`}
+          <button
+            className="upload-button"
+            disabled={busy || !permission}
+            onClick={() => upload.current?.click()}
           >
             <Upload size={16} />
             {busy ? "Importing and extracting…" : "Upload a PDF"}
-            <input
-              type="file"
-              accept="application/pdf,.pdf"
-              disabled={busy || !permission}
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void importSource(f);
-                e.target.value = "";
-              }}
-            />
-          </label>
-          {notice && (
-            <p role="status" className="success-note">
-              {notice}
-            </p>
-          )}
-          {error && (
-            <p role="alert" className="error">
-              {error}
-            </p>
-          )}
-        </section>
+          </button>
+          <input
+            ref={upload}
+            hidden
+            aria-label="PDF file"
+            type="file"
+            accept="application/pdf,.pdf"
+            disabled={busy || !permission}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) void importSource(f);
+              e.target.value = "";
+            }}
+          />
+        </details>
+        {notice && (
+          <p role="status" className="success-note">
+            {notice}
+          </p>
+        )}
+        {error && (
+          <p role="alert" className="error">
+            {error}
+          </p>
+        )}
       </div>
     </aside>
   );

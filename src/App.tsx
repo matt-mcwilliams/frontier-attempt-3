@@ -12,16 +12,13 @@ import {
   BookOpen,
   Camera,
   Check,
-  ChevronRight,
   CornerDownLeft,
   Feather,
   History,
   LoaderCircle,
-  MoreHorizontal,
   Paperclip,
   Settings2,
   Square,
-  Target,
   X,
 } from "lucide-react";
 import type { Bootstrap, Message, Paper, Session } from "../shared/types";
@@ -291,7 +288,6 @@ export function App() {
     );
   const paper = data.papers.find((p) => p.id === session.paperId);
   const stageIndex = stages.indexOf(session.state.stage);
-  const stageCount = String(stageIndex + 1).padStart(2, "0");
   const begin = () => {
     const text = paper
       ? `Begin a goal-first learning journey through ${paper.title}. Start with the motivating problem and a concrete example relevant to my research objective. Explain the core intuition before heavy notation. Be explicit about the source material you can access, and give me one useful question to reason about.`
@@ -354,11 +350,11 @@ export function App() {
         <a className="wordmark" href="/" aria-label="Margin home">
           <span className="brand-mark">M</span>
           <span className="brand">Margin</span>
-          <span className="edition">RESEARCH STUDIO</span>
         </a>
         <nav aria-label="Workspace">
           <button
             className={panel === "sources" ? "nav-button active" : "nav-button"}
+            aria-pressed={panel === "sources"}
             onClick={() =>
               setPanel((p) => (p === "sources" ? null : "sources"))
             }
@@ -368,6 +364,7 @@ export function App() {
           </button>
           <button
             className={panel === "history" ? "nav-button active" : "nav-button"}
+            aria-pressed={panel === "history"}
             onClick={() => {
               void refresh();
               setPanel((p) => (p === "history" ? null : "history"));
@@ -380,52 +377,26 @@ export function App() {
           <button
             className="nav-button"
             aria-label="Open settings"
+            title="Settings"
             onClick={() => setSettings(true)}
           >
             <Settings2 size={17} />
           </button>
-          <button
-            className="profile-button"
-            aria-label={
-              data.auth.active?.planEnabled
-                ? "Account settings"
-                : "Continue with ChatGPT"
-            }
-            onClick={() => setSettings(true)}
-          >
-            {data.auth.active?.planEnabled ? (
+          {data.auth.active?.planEnabled && (
+            <button
+              className="profile-button"
+              aria-label="Account settings"
+              onClick={() => setSettings(true)}
+            >
               <span className="connected-avatar">
                 {(data.auth.active.email || "M")[0].toUpperCase()}
               </span>
-            ) : (
-              <span className="login-label">
-                Connect ChatGPT <ArrowUpRight size={13} />
-              </span>
-            )}
-          </button>
+            </button>
+          )}
         </nav>
       </header>
       <div className="app-body">
         <main className={`lesson ${messages.length ? "" : "empty-lesson"}`}>
-          <div className="objective-bar">
-            <Target size={16} strokeWidth={1.5} />
-            <div>
-              <span className="eyebrow">THE LONG VIEW</span>
-              <button
-                onClick={() => setSettings(true)}
-                title={session.objective}
-              >
-                {session.objective}
-              </button>
-            </div>
-            <button
-              aria-label="Edit research objective"
-              className="icon-button"
-              onClick={() => setSettings(true)}
-            >
-              <MoreHorizontal size={17} />
-            </button>
-          </div>
           <div
             className="lesson-scroll"
             ref={scroll}
@@ -436,99 +407,66 @@ export function App() {
             }}
           >
             <div className="reading-column">
-              <div className="lesson-breadcrumb">
-                <span>PSYCHOMETRICS</span>
-                <ChevronRight size={12} />
-                <span>
-                  {paper?.year === 1992
-                    ? "BIFACTOR MODELS"
-                    : paper?.year === 2009
-                      ? "COGNITIVE DIAGNOSIS"
-                      : "RESEARCH IN PROGRESS"}
-                </span>
-                <span className="saved-label">
-                  <Check size={11} />
-                  Saved locally
-                </span>
-              </div>
               <header className="lesson-heading">
-                <div className="row spread">
-                  <span className="eyebrow">
-                    {paper
-                      ? "A PAPER, UNDERSTOOD DEEPLY"
-                      : "A QUESTION WORTH PURSUING"}
-                  </span>
-                  <span className="lesson-number">
-                    FIELDNOTES / {String(data.sessions.length).padStart(2, "0")}
-                  </span>
-                </div>
                 <h1>
-                  {messages.length ? (
-                    session.state.topic
-                  ) : paper?.id === "bifactor-1992" ? (
-                    <>
-                      One score.
-                      <br />
-                      <em>Many abilities.</em>
-                    </>
-                  ) : paper?.id === "dina-2009" ? (
-                    <>
-                      Beyond a score.
-                      <br />
-                      <em>A diagnosis.</em>
-                    </>
-                  ) : (
-                    session.title
-                  )}
+                  {messages.length
+                    ? session.state.topic
+                    : (paper?.title ?? session.title)}
                 </h1>
                 {paper && (
                   <button
                     className="paper-reference"
+                    aria-label={`Source details for ${paper.title}`}
                     onClick={() => setPanel("sources")}
                   >
-                    <span className="paper-icon">
-                      <FileIcon />
-                    </span>
+                    <BookOpen size={17} />
                     <span>
-                      <strong>{paper.title}</strong>
+                      {messages.length > 0 && <strong>{paper.title}</strong>}
+                      <span>
+                        {paper.authors.replaceAll(";", " &")} · {paper.year}
+                      </span>
                       <small>
-                        {paper.authors.replaceAll(";", " &")} · {paper.year}{" "}
-                        <span className="access-inline">
+                        <span>
                           {paper.access === "full-text"
                             ? "Full text"
                             : paper.access === "abstract-only"
                               ? "Abstract only"
                               : "Metadata only"}
                         </span>
+                        <span> · Source details</span>
                       </small>
                     </span>
                     <ArrowUpRight size={15} />
                   </button>
                 )}
               </header>
-              <div className="journey-indicator">
-                <div
-                  className="journey-track"
-                  aria-label={`Paper journey: ${session.state.stage}`}
-                >
-                  {stages.map((s, i) => (
-                    <span
-                      key={s}
-                      className={
-                        i < stageIndex
-                          ? "past"
-                          : i === stageIndex
-                            ? "current"
-                            : ""
-                      }
-                      title={s}
-                    />
-                  ))}
+              {messages.length > 0 && (
+                <div className="journey-indicator">
+                  <div
+                    className="journey-track"
+                    role="progressbar"
+                    aria-label="Lesson stage"
+                    aria-valuemin={1}
+                    aria-valuemax={stages.length}
+                    aria-valuenow={stageIndex + 1}
+                    aria-valuetext={session.state.stage}
+                  >
+                    {stages.map((s, i) => (
+                      <span
+                        key={s}
+                        className={
+                          i < stageIndex
+                            ? "past"
+                            : i === stageIndex
+                              ? "current"
+                              : ""
+                        }
+                      />
+                    ))}
+                  </div>
+                  <span>{session.state.stage}</span>
                 </div>
-                <span>
-                  <b>{stageCount}</b> / 06 <i>·</i> {session.state.stage}
-                </span>
-              </div>
+              )}
               {session.state.detours.length > 0 && (
                 <div className="inline-detour">
                   <CornerDownLeft size={15} />
@@ -541,29 +479,23 @@ export function App() {
                 </div>
               )}
               {messages.length === 0 && !busy ? (
-                <section className="lesson-invitation">
-                  <span className="invitation-mark">“</span>
-                  <h2>
-                    What does a test score
-                    <br />
-                    leave unexplained?
-                  </h2>
-                  <p>
-                    Your research begins with a problem, not a prerequisite
-                    list. Explore the idea, work through the mathematics, and
-                    build an explanation you can defend.
-                  </p>
-                  <button className="begin-button" onClick={begin}>
-                    Begin the exploration <ArrowUpRight size={18} />
+                <section
+                  className="lesson-invitation"
+                  aria-label="Start a lesson"
+                >
+                  <button
+                    className="primary"
+                    onClick={
+                      data.auth.active?.planEnabled
+                        ? begin
+                        : () => setSettings(true)
+                    }
+                  >
+                    {data.auth.active?.planEnabled
+                      ? "Start lesson"
+                      : "Connect ChatGPT to start"}
+                    <ArrowUpRight size={17} />
                   </button>
-                  <div className="invitation-note">
-                    <span className="tiny-rule" />
-                    <p>
-                      {data.auth.active?.planEnabled
-                        ? "The tutor will begin from your research objective."
-                        : "Connect your ChatGPT account to begin. Your lessons stay on this computer."}
-                    </p>
-                  </div>
                 </section>
               ) : null}
               <div
@@ -601,7 +533,7 @@ export function App() {
                       </span>
                       <span>
                         <LoaderCircle size={11} className="spin" />
-                        {stream ? "Writing" : "Thinking through the next step"}
+                        {stream ? "Writing" : "Thinking…"}
                       </span>
                     </div>
                     {stream ? (
@@ -618,7 +550,7 @@ export function App() {
               </div>
               {messages.length > 0 && !busy && (
                 <div className="next-step">
-                  <span className="eyebrow">THE THREAD WE’RE FOLLOWING</span>
+                  <span className="eyebrow">NEXT STEP</span>
                   <p>{session.state.immediateGoal}</p>
                 </div>
               )}
@@ -667,8 +599,8 @@ export function App() {
                   onChange={(e) => setDraft(e.target.value)}
                   placeholder={
                     images.length
-                      ? "What would you like me to examine in your work?"
-                      : "A question, a line of reasoning, a place you’re stuck…"
+                      ? "What should we look at?"
+                      : "Ask a question…"
                   }
                   rows={2}
                   disabled={busy}
@@ -700,6 +632,7 @@ export function App() {
                     </button>
                     <button
                       className={`camera-toggle ${panel === "camera" ? "active" : ""}`}
+                      aria-pressed={panel === "camera"}
                       onClick={() =>
                         setPanel((p) => (p === "camera" ? null : "camera"))
                       }
@@ -714,7 +647,7 @@ export function App() {
                       aria-pressed={hint}
                       disabled={busy}
                     >
-                      Ask for a hint
+                      Hint
                     </button>
                   </div>
                   {busy ? (
@@ -741,25 +674,19 @@ export function App() {
               </div>
               <div className="composer-caption">
                 <span>
-                  {data.auth.active?.planEnabled ? (
-                    <>
-                      <span className="status-dot" />
-                      Using ChatGPT plan{" "}
-                      <a
-                        href="https://chatgpt.com/settings/usage"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Manage usage
-                      </a>
-                    </>
-                  ) : (
-                    <>A private workspace for independent understanding.</>
-                  )}
+                  <Check size={12} /> Saved locally
                 </span>
-                <span>
-                  Enter to send <i>·</i> Shift + Enter for a new line
-                </span>
+                {data.auth.active?.planEnabled ? (
+                  <a
+                    href="https://chatgpt.com/settings/usage"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ChatGPT plan · Manage usage
+                  </a>
+                ) : (
+                  <span>Enter to send · Shift + Enter for a new line</span>
+                )}
               </div>
             </div>
           </footer>
@@ -831,19 +758,5 @@ export function App() {
         />
       )}
     </div>
-  );
-}
-function FileIcon() {
-  return (
-    <svg
-      width="17"
-      height="20"
-      viewBox="0 0 17 20"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path d="M3 1h7l4 4v13H3V1Z" stroke="currentColor" />
-      <path d="M9 1v5h5M5.5 10h6M5.5 13h6" stroke="currentColor" />
-    </svg>
   );
 }

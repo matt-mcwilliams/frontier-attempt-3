@@ -7,7 +7,6 @@ import {
   Sun,
   Moon,
   Monitor,
-  FlaskConical,
 } from "lucide-react";
 import type {
   Bootstrap,
@@ -92,6 +91,7 @@ export function Settings({
     <dialog
       ref={dialog}
       className="settings-dialog"
+      aria-labelledby="settings-title"
       onCancel={onClose}
       onClick={(e) => {
         if (e.target === dialog.current) onClose();
@@ -99,10 +99,7 @@ export function Settings({
     >
       <div className="settings-inner">
         <header className="workspace-head">
-          <div>
-            <span className="eyebrow">YOUR PERSONAL STUDIO</span>
-            <h2>A few quiet settings.</h2>
-          </div>
+          <h2 id="settings-title">Settings</h2>
           <button
             aria-label="Close settings"
             className="icon-button"
@@ -130,11 +127,10 @@ export function Settings({
           </div>
         )}
         <section>
-          <span className="eyebrow">ACCOUNT & MODEL</span>
-          <h3>Use your ChatGPT plan.</h3>
+          <h3>ChatGPT</h3>
           <p>
-            Sign in and approve plan use for this local, open-source tutor. Your
-            credentials stay on this computer. No API key is required.
+            Sign in to tutor with your ChatGPT plan. Credentials stay on this
+            computer.
           </p>
           {data.auth.accounts.map((a) => (
             <div className="account-row" key={a.id}>
@@ -212,13 +208,9 @@ export function Settings({
           >
             Manage ChatGPT usage <ArrowUpRight size={14} />
           </a>
-          <p className="fineprint">
-            Local safeguard: {data.dailyLimit} attempts per day; one request per
-            submitted turn. No autonomous model calls.
-          </p>
         </section>
         <section>
-          <span className="eyebrow">RESEARCH OBJECTIVE</span>
+          <h3>Research objective</h3>
           <label className="sr-only" htmlFor="goal">
             Long-term research objective
           </label>
@@ -245,7 +237,7 @@ export function Settings({
           </button>
         </section>
         <section>
-          <span className="eyebrow">APPEARANCE</span>
+          <h3>Appearance</h3>
           <div className="theme-options">
             {(
               [
@@ -256,6 +248,7 @@ export function Settings({
             ).map(([theme, Icon]) => (
               <button
                 key={theme}
+                aria-pressed={data.settings.theme === theme}
                 className={data.settings.theme === theme ? "selected" : ""}
                 onClick={() => void patch({ theme })}
               >
@@ -265,11 +258,33 @@ export function Settings({
             ))}
           </div>
         </section>
-        <section className="experimental">
-          <div className="row">
-            <FlaskConical size={17} />
-            <span className="eyebrow">EXPERIMENTAL TEACHING</span>
-          </div>
+        <section>
+          <h3>Your data</h3>
+          <p>
+            Lessons and files stay on this computer. Submitted messages, source
+            excerpts, and selected images go to OpenAI; live video stays
+            private.
+          </p>
+          <a
+            className="subtle-button"
+            href="/api/export"
+            download="margin-learning-record.json"
+          >
+            <Download size={15} />
+            Export learning record
+          </a>
+          <p className="fineprint">
+            Export includes text and image IDs. Back up the data directory for
+            images and PDFs.
+          </p>
+        </section>
+        <details className="advanced-settings">
+          <summary>Advanced settings</summary>
+          <p className="fineprint">
+            Daily limit: {data.dailyLimit} attempts. Each submitted turn makes
+            one tutor request.
+          </p>
+
           <label className="field-label">
             Instructional strategy
             <select
@@ -296,31 +311,10 @@ export function Settings({
             </select>
           </label>
           <p className="fineprint">
-            Evidence includes active study time, hint requests, independent
-            demonstrations, completed implementations, and recall attempts.
-            Conversation volume is not a learning score.
+            Teaching strategies are experimental. Activity counts do not measure
+            mastery.
           </p>
-        </section>
-        <section>
-          <span className="eyebrow">LOCAL DATA</span>
-          <p>
-            Lessons, sources, and notebook captures are stored in SQLite on this
-            computer. Submitted lesson context and selected images go to OpenAI.
-            Continuous video does not.
-          </p>
-          <a
-            className="subtle-button"
-            href="/api/export"
-            download="margin-learning-record.json"
-          >
-            <Download size={15} />
-            Export learning record
-          </a>
-          <p className="fineprint">
-            The JSON export includes lesson text and source text, with image
-            IDs. Back up the data directory to preserve images and PDFs.
-          </p>
-        </section>
+        </details>
         {error && (
           <p role="alert" className="error">
             {error}

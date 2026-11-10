@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import {
   X,
-  Camera,
   RotateCw,
   Pause,
   Play,
@@ -241,10 +240,7 @@ export function CameraPanel({
   return (
     <aside className="workspace camera-workspace" aria-label="Notebook camera">
       <header className="workspace-head">
-        <div>
-          <span className="eyebrow">SECOND WORKSPACE</span>
-          <h2>The notebook</h2>
-        </div>
+        <h2>Notebook camera</h2>
         <button
           className="icon-button"
           aria-label="Close camera"
@@ -256,14 +252,7 @@ export function CameraPanel({
       <video ref={video} autoPlay muted playsInline className="hidden-video" />
       {!live ? (
         <div className="pairing">
-          <div className="pairing-symbol">
-            <Camera size={23} strokeWidth={1.5} />
-          </div>
-          <h3>
-            A little room for
-            <br />
-            handwritten thinking.
-          </h3>
+          <h3>Pair your phone</h3>
           <p>
             Scan with your phone. Place it above your notebook, then select your
             work here.
@@ -381,9 +370,8 @@ export function CameraPanel({
           </button>
         </div>
         <p className="fineprint">
-          Drag to select; the frame freezes while you work. Captures keep the
-          camera’s source resolution. Nothing is sent to the tutor until you
-          submit.
+          Drag to select and freeze a region. Images go to the tutor only when
+          you submit.
         </p>
       </div>
       <div className="camera-bottom">
